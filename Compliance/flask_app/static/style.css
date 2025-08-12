@@ -1,0 +1,170 @@
+/* Custom styles for Algorand Compliance App */
+
+/* Main Theme Colors */
+:root {
+    --algorand-black: #000000;
+    --algorand-dark: #222222;
+    --algorand-accent: #1a73e8;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #0dcaf0;
+}
+
+/* Original Styles */
+.hash-code {
+    font-family: monospace;
+    word-break: break-all;
+}
+
+.status-badge-compliant {
+    background-color: #198754;
+    color: white;
+}
+
+.status-badge-expired {
+    background-color: #dc3545;
+    color: white;
+}
+
+.status-badge-pending {
+    background-color: #ffc107;
+    color: black;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.contract-actions .card {
+    height: 100%;
+}
+
+.document-list {
+    margin-top: 20px;
+}
+
+.algorand-btn {
+    background-color: #000000;
+    border-color: #000000;
+}
+
+.algorand-btn:hover {
+    background-color: #222222;
+    border-color: #222222;
+}
+
+/* Enhanced Modern Styles */
+
+/* Navbar and Button Styles */
+.navbar-algorand {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-algorand {
+    background-color: var(--algorand-black);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.btn-algorand:hover {
+    background-color: var(--algorand-dark);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Card Hover Effects */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Compliance Badge Styles */
+.compliance-badge {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.compliance-badge.compliant {
+    background-color: rgba(25, 135, 84, 0.15);
+    color: var(--success-color);
+    border: 2px solid var(--success-color);
+}
+
+.compliance-badge.pending {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: var(--warning-color);
+    border: 2px solid var(--warning-color);
+}
+
+.compliance-badge.expired {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: var(--danger-color);
+    border: 2px solid var(--danger-color);
+}
+
+/* Copy Icon Hover Effect */
+.copy-icon {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.copy-icon:hover {
+    color: var(--algorand-accent) !important;
+    transform: scale(1.2);
+}
+
+/* Document Preview Container */
+.document-preview {
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+/* Table Improvements */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+th i {
+    opacity: 0.7;
+}
+
+/* Status Visualization */
+#statusVisual {
+    display: block;
+    margin: 0 auto;
+}
+
+/* Custom Form Styles */
+.form-control:focus, .form-select:focus {
+    border-color: var(--algorand-accent);
+    box-shadow: 0 0 0 0.25rem rgba(26, 115, 232, 0.25);
+}
+
+/* Animation for Status Updates */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.status-update {
+    animation: pulse 2s ease-in-out;
+}

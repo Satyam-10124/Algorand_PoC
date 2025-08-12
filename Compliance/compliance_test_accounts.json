@@ -1,0 +1,12 @@
+{
+    "admin": {
+        "address": "AESO5BABKSE5M725CPRZZEGD3NTYHYAL6NU44VRRX4C2D2KWJUBATOLBZM",
+        "private_key": "GjgY9dItFUl1Ztx1bqiazjRh6MbQkE/SHkWv3AUaXwMBJO6EAVSJ1n9dE+OckMPbZ4PgC/NpzlYxvwWh6VZNAg==",
+        "mnemonic": "addict genius kind tag clean false crisp symbol solid payment essence erupt second ring mail move enemy kitten penalty slab arm shoot brain abandon sibling"
+    },
+    "verifier": {
+        "address": "36GR5YRE6CC746JYSUMRC4XX5F3FWJEUG3OJKLCEV2Q3TF5FWKPVOOVZM4",
+        "private_key": "QgsVuMbGAUoYTmkaCB/SGdTh7LxFmimJ0gsoxGMNE0jfjR7iJPCF/nk4lRkRcvfpdlsklDbclSxErqG5l6Wynw==",
+        "mnemonic": "hair feature foster hockey adjust barely ignore harsh addict label trouble dose senior depth combine olympic cement enforce album dream shy select dog able same"
+    }
+}

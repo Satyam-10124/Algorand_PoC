@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+
+{% block title %}Algorand Compliance System - Home{% endblock %}
+
+{% block content %}
+<div class="py-5 text-center">
+    <div class="row align-items-center">
+        <div class="col-lg-6 text-lg-start">
+            <h1 class="display-4 fw-bold lh-1 mb-3">Algorand Compliance System</h1>
+            <p class="lead mb-4">
+                A blockchain-powered document compliance attestation platform on Algorand TestNet.
+                Secure, transparent, and immutable record-keeping for regulatory compliance.
+            </p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <form action="{{ url_for('create_contract') }}" method="post">
+                    <button type="submit" class="btn btn-algorand btn-lg px-4 gap-3">
+                        <i class="fas fa-plus-circle me-2"></i>Deploy New Contract
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="ratio ratio-16x9 rounded shadow overflow-hidden">
+                <iframe src="https://www.youtube.com/embed/gACVKaNqxPs?controls=0" title="Algorand Video" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dashboard Section -->
+<div class="row mb-5 mt-5 pt-3 border-top">
+    <div class="col-12 mb-4">
+        <h2 class="text-center">Compliance Dashboard</h2>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-4 mb-3 text-primary">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <h5 class="card-title">Total Contracts</h5>
+                <p class="display-6 fw-bold">{{ contracts|length if contracts else 0 }}</p>
+                <p class="text-muted">Active compliance contracts</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-4 mb-3 text-success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h5 class="card-title">Compliant</h5>
+                <p class="display-6 fw-bold">{{ compliant_count|default(0) }}</p>
+                <p class="text-muted">Verified documents</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-4 mb-3 text-warning">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h5 class="card-title">Pending</h5>
+                <p class="display-6 fw-bold">{{ pending_count|default(0) }}</p>
+                <p class="text-muted">Awaiting verification</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-4 mb-3 text-info">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <h5 class="card-title">Verifiers</h5>
+                <p class="display-6 fw-bold">{{ verifier_count|default(1) }}</p>
+                <p class="text-muted">Active verification agents</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if contracts %}
+<!-- Contract List -->
+<div class="card border-0 shadow-sm mb-5">
+    <div class="card-header bg-light py-3">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <i class="fas fa-list me-2 text-primary"></i>
+                <h5 class="d-inline mb-0">Your Compliance Contracts</h5>
+            </div>
+            <div>
+                <span class="badge bg-info">{{ contracts|length }} contracts</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th><i class="fas fa-hashtag me-2"></i>Contract ID</th>
+                        <th><i class="fas fa-calendar-alt me-2"></i>Deployment Date</th>
+                        <th><i class="fas fa-chart-line me-2"></i>Status</th>
+                        <th><i class="fas fa-cog me-2"></i>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contract in contracts %}
+                    <tr>
+                        <td>{{ contract.app_id }}</td>
+                        <td>{{ contract.created_at|timestamp_to_date if contract.created_at else deployment_date|default('Recent') }}</td>
+                        <td>
+                            <span class="badge bg-success">Active</span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('view_contract', app_id=contract.app_id) }}" class="btn btn-sm btn-algorand">
+                                <i class="fas fa-eye me-1"></i> View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info d-flex align-items-center" role="alert">
+    <i class="fas fa-info-circle me-2"></i>
+    <div>
+        No contracts deployed yet. Click "Deploy New Contract" to get started with your first compliance contract.
+    </div>
+</div>
+{% endif %}
+
+<!-- Transaction Monitoring Section -->
+<div class="card border-0 shadow-sm mb-5">
+    <div class="card-header bg-light py-3">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-exchange-alt me-2 text-primary"></i>
+            <h5 class="mb-0">Recent Blockchain Activity</h5>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <div id="transaction-monitor" class="mb-3">
+            <!-- This would be populated dynamically via JavaScript in a production app -->
+            <div class="d-flex align-items-center justify-content-center" style="height: 120px;">
+                <div class="text-center text-muted">
+                    <i class="fas fa-sync fa-spin mb-3 display-6"></i>
+                    <p>Monitoring blockchain transactions...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5 mt-5 pt-3 border-top">
+    <div class="col-12 mb-4">
+        <h2 class="text-center">How It Works</h2>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="mb-3">
+                    <i class="fas fa-file-contract fa-3x text-primary"></i>
+                </div>
+                <h5 class="card-title">1. Register Document</h5>
+                <p class="card-text">Upload your compliance document and register its hash on the Algorand blockchain with version control.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="mb-3">
+                    <i class="fas fa-user-shield fa-3x text-warning"></i>
+                </div>
+                <h5 class="card-title">2. Assign Verifiers</h5>
+                <p class="card-text">Designate authorized verifiers who can attest to the compliance status of your documents.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="mb-3">
+                    <i class="fas fa-check-circle fa-3x text-success"></i>
+                </div>
+                <h5 class="card-title">3. Verify Compliance</h5>
+                <p class="card-text">Verifiers confirm compliance status, creating an immutable audit trail on the blockchain.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Account Information
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Admin Address</h5>
+                <p class="card-text"><code>{{ admin_address }}</code></p>
+                <h5 class="card-title">Verifier Address</h5>
+                <p class="card-text"><code>{{ verifier_address }}</code></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Deployed Contracts
+            </div>
+            <div class="card-body">
+                {% if contracts %}
+                    <div class="list-group">
+                        {% for contract in contracts %}
+                            <a href="{{ url_for('view_contract', app_id=contract.app_id) }}" class="list-group-item list-group-item-action">
+                                App ID: {{ contract.app_id }}
+                                <span class="float-end text-muted">{{ contract.documents|length }} document(s)</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No contracts deployed yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

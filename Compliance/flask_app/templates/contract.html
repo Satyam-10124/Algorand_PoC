@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+
+{% block title %}Contract Details - {{ app_id }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>
+            <i class="fas fa-file-contract me-2"></i>
+            Compliance Contract #{{ app_id }}
+        </h2>
+        <p class="text-muted">Smart contract deployed on Algorand TestNet</p>
+    </div>
+    <div>
+        <a href="https://testnet.explorer.perawallet.app/application/{{ app_id }}/" class="btn btn-algorand" target="_blank">
+            <i class="fas fa-external-link-alt me-2"></i> View on Explorer
+        </a>
+    </div>
+</div>
+
+<!-- Status Card -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <h4>Contract Status</h4>
+                        <div class="d-flex align-items-center">
+                            {% if status.is_compliant %}
+                                <div class="compliance-badge compliant me-3">
+                                    <i class="fas fa-check-circle fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0 text-success">Compliant</h5>
+                                    <small>Verified by {{ status.verifier }}</small>
+                                </div>
+                            {% else %}
+                                <div class="compliance-badge pending me-3">
+                                    <i class="fas fa-clock fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0 text-warning">Pending Verification</h5>
+                                    <small>Waiting for verifier approval</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="border rounded p-3 text-center">
+                                    <div class="text-muted small">Creator</div>
+                                    <div class="small text-truncate" data-bs-toggle="tooltip" title="{{ creator_address }}">
+                                        {{ creator_address[:10] }}...{{ creator_address[-4:] }}
+                                        <i class="fas fa-copy ms-1 text-muted copy-icon" 
+                                           onclick="copyToClipboard('{{ creator_address }}')" 
+                                           style="cursor: pointer;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded p-3 text-center">
+                                    <div class="text-muted small">Contract ID</div>
+                                    <div>
+                                        <strong>{{ app_id }}</strong>
+                                        <i class="fas fa-copy ms-1 text-muted copy-icon" 
+                                           onclick="copyToClipboard('{{ app_id }}')" 
+                                           style="cursor: pointer;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Attestation Date</h6>
+                        <p>{{ status.attestation_date }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Expiration Date</h6>
+                        <p>{{ status.expiration_date }}</p>
+                    </div>
+                {% else %}
+                    <p class="text-muted">Status information not available. The contract may not have a registered document yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contract Actions -->
+    <div class="col-md-6">
+        <!-- Opt-In -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-light py-3">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-plug me-2 text-primary"></i>
+                    <h5 class="mb-0">Account Opt-In</h5>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-muted mb-3">Opt-in your account to interact with this compliance contract.</p>
+                <form action="{{ url_for('contract_opt_in', app_id=app_id) }}" method="post">
+                    <div class="form-group mb-3">
+                        <label for="role" class="form-label">
+                            <i class="fas fa-user-tag me-1"></i> Select Role:
+                        </label>
+                        <select class="form-select" id="role" name="role">
+                            <option value="admin">
+                                <i class="fas fa-user-shield"></i> Admin - Document Registration & Management
+                            </option>
+                            <option value="verifier">
+                                <i class="fas fa-user-check"></i> Verifier - Compliance Verification
+                            </option>
+                        </select>
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            This will execute an Algorand transaction to opt in the selected account
+                        </small>
+                    </div>
+                    <button type="submit" class="btn btn-algorand">
+                        <i class="fas fa-handshake me-2"></i> Opt-In Account
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Assign Verifier -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-light py-3">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-user-check me-2 text-warning"></i>
+                    <h5 class="mb-0">Assign Verifier</h5>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <p class="text-muted mb-0">Assign a verifier role to an Algorand address (admin only).</p>
+                    <span class="badge bg-primary">Admin Action</span>
+                </div>
+                <form action="{{ url_for('assign_verifier', app_id=app_id) }}" method="post">
+                    <div class="form-group mb-3">
+                        <label for="verifier_address" class="form-label">
+                            <i class="fas fa-address-card me-1"></i> Verifier Address:
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user-shield"></i></span>
+                            <input type="text" class="form-control" id="verifier_address" name="verifier_address" 
+                                   value="{{ verifier_address }}" placeholder="Enter Algorand address..." required>
+                        </div>
+                        <small class="form-text text-muted">
+                            The address must be already opted in to the contract
+                        </small>
+                    </div>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-user-plus me-2"></i> Assign Verifier Role
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Verify Compliance -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-light py-3">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-shield-alt me-2 text-success"></i>
+                    <h5 class="mb-0">Verify Compliance</h5>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <p class="text-muted mb-0">Mark document as compliant on the blockchain (verifier only).</p>
+                    <span class="badge bg-success">Verifier Action</span>
+                </div>
+                <div class="alert alert-info d-flex align-items-center" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <div>
+                        By verifying compliance, you are creating an immutable record on the Algorand blockchain
+                        that this document meets all regulatory requirements.
+                    </div>
+                </div>
+                <form action="{{ url_for('verify_compliance', app_id=app_id) }}" method="post">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-certificate me-2"></i> Verify Document Compliance
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Register Document -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light py-3">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-file-upload me-2 text-primary"></i>
+                    <h5 class="mb-0">Register Document</h5>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-muted mb-4">Upload and register a new compliance document on the Algorand blockchain (admin only).</p>
+                <form action="{{ url_for('register_document', app_id=app_id) }}" method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="document" class="form-label">
+                                    <i class="fas fa-file-alt me-1"></i> Document File:
+                                </label>
+                                <input type="file" class="form-control" id="document" name="document" 
+                                       required onchange="updateDocumentHashPreview(this)">
+                                <div id="hashPreviewContainer" class="mt-2 p-2 border rounded" style="display:none;">
+                                    <small id="hashPreview" class="text-muted"></small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label for="version" class="form-label">
+                                    <i class="fas fa-code-branch me-1"></i> Version:
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">v</span>
+                                    <input type="text" class="form-control" id="version" name="version" 
+                                           value="1.0.0" placeholder="1.0.0" required>
+                                </div>
+                                <small class="form-text text-muted">Semantic versioning recommended</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label for="expiry_days" class="form-label">
+                                    <i class="fas fa-calendar-alt me-1"></i> Expire After (days):
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="expiry_days" name="expiry_days" 
+                                           value="365" min="1" required>
+                                    <span class="input-group-text">days</span>
+                                </div>
+                                <small class="form-text text-muted">Document validity period</small>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-algorand mt-2">
+                        <i class="fas fa-upload me-2"></i> Register Document
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Registered Documents -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light py-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <i class="fas fa-file-contract me-2 text-primary"></i>
+                        <h5 class="d-inline mb-0">Registered Documents</h5>
+                    </div>
+                    <div>
+                        <span class="badge bg-info">{{ documents|length if documents else 0 }} documents</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                {% if documents %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th><i class="fas fa-file me-2"></i>Document</th>
+                                    <th><i class="fas fa-fingerprint me-2"></i>Hash</th>
+                                    <th><i class="fas fa-code-branch me-2"></i>Version</th>
+                                    <th><i class="fas fa-calendar me-2"></i>Registration Date</th>
+                                    <th>Expiry Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for doc in documents %}
+                                    <tr>
+                                        <td>{{ doc.filename }}</td>
+                                        <td><code>{{ doc.hash[:16] }}...</code></td>
+                                        <td>{{ doc.version }}</td>
+                                        <td>{{ doc.registered_at|timestamp_to_date }}</td>
+                                        <td>{{ doc.expiry_timestamp|timestamp_to_date }}</td>
+                                        <td>
+                                            <a href="{{ url_for('download_document', filename=doc.filename) }}" class="btn btn-sm btn-outline-primary">Download</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No documents registered yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Any additional JavaScript for this page
+</script>
+{% endblock %}
